@@ -110,14 +110,14 @@ void suggestionsRec(struct TrieNode* root, string currPrefix)
 } 
 
 // print suggestions for given query prefix. 
-int printAutoSuggestions(TrieNode* root, const string query) 
+void printAutoSuggestions(TrieNode* root, const string query) 
 { 
 	struct TrieNode* pCrawl = root; 
 
 	// Check if prefix is present and find the 
 	// the node (of last level) with last character 
 	// of given string. 
-	int level; 
+	int level = 0; 
 	int n = query.length(); 
 	for (level = 0; level < n; level++) 
 	{ 
@@ -125,36 +125,19 @@ int printAutoSuggestions(TrieNode* root, const string query)
 
 		// no string in the Trie has this prefix 
 		if (!pCrawl->children[index]) 
-			return 0; 
+			break; 
 
 		pCrawl = pCrawl->children[index]; 
 	} 
 
-	// If prefix is present as a word. 
-	bool isWord = (pCrawl->isWordEnd == true); 
-
-	// If prefix is last node of tree (has no 
-	// children) 
-	bool isLast = isLastNode(pCrawl); 
-
-	// If prefix is present as a word, but 
-	// there is no subtree below the last 
-	// matching node. 
-	if (isWord && isLast) 
-	{ 
-		cout << query << endl; 
-		return -1; 
-	} 
+	 
 
 	// If there are are nodes below last 
 	// matching character. 
-	if (!isLast) 
-	{ 
-		string prefix = query; 
+	 
+		string prefix = query.substr(0, level); 
 		suggestionsRec(pCrawl, prefix); 
-		return 1; 
-	} 
-    return 0;
+		
 } 
 
 // Driver Code 
@@ -162,7 +145,7 @@ int main()
 { 
 	struct TrieNode* root = getNode(); 
 	string line;
-	ifstream words ("../words.txt");
+	ifstream words ("words.txt");
 	if(words){
 		while(getline(words,line)){
 			insert(root,line);
@@ -177,7 +160,7 @@ int main()
 			cout<<"The spelling of this word is correct."<<endl;
 		}else{
 			cout<<"The word is spelled wrong." << endl;
-            int comp = printAutoSuggestions(root, line); 
+            printAutoSuggestions(root, line); 
 		}
 	}
 
